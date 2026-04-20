@@ -6,7 +6,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig(({ command }) => ({
-    base: command === 'build' ? '/linkbox/' : '/',
+    base: command === 'build' ? '/LinkBox/' : '/',
     plugins: [
         vue(),
         vueDevTools(),
