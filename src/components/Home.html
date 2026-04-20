@@ -1,0 +1,192 @@
+<section class="form-section">
+  <h2>Adicionar Link</h2>
+  <form @submit.prevent="onSubmit">
+    <div class="field">
+      <label for="url">URL:</label>
+      <div class="url-row">
+        <input v-model="url" type="url" id="url" placeholder="https://exemplo.com" required @input="urlError = ''" />
+        <button type="button" class="btn btn-secondary" :disabled="!url.trim() || metaLoading" @click="onFetchMetadata">
+          {{ metaLoading ? 'Buscando...' : 'Buscar Info' }}
+        </button>
+      </div>
+      <p v-if="urlError" class="error">{{ urlError }}</p>
+      <p v-if="metaError" class="error">{{ metaError }}</p>
+    </div>
+
+    <div class="field">
+      <label for="title">Título:</label>
+      <input v-model="title" type="text" id="title" placeholder="Título da página" />
+    </div>
+
+    <div class="field">
+      <label for="description">Descrição:</label>
+      <textarea v-model="description" id="description" placeholder="Descrição do link" rows="3"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="tags">Tags (separadas por vírgula):</label>
+      <input v-model="tags" type="text" id="tags" placeholder="vue, javascript, tutorial" />
+      <div v-if="tagSuggestions.length" class="tag-suggestions">
+        <span
+          v-for="tag in tagSuggestions"
+          :key="tag"
+          class="tag tag-suggestion"
+          @mousedown.prevent
+          @click="applyTagSuggestion('add', tag)"
+        >{{ tag }}</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="image">URL da Imagem:</label>
+      <input v-model="image" type="url" id="image" placeholder="https://exemplo.com/imagem.png" />
+      <img v-if="image" :src="image" alt="Preview" class="image-preview" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Adicionar Link</button>
+  </form>
+</section>
+
+<section class="links-section">
+  <div class="links-header">
+    <h2>Meus Links ({{ links.length }})</h2>
+    <div class="links-actions">
+      <button class="btn btn-secondary" @click="onExport" :disabled="!links.length">Exportar</button>
+      <button class="btn btn-secondary" @click="onImportClick">Importar</button>
+      <input ref="fileInput" type="file" accept=".zip,.json" hidden @change="onImportFile" />
+    </div>
+  </div>
+
+  <div class="search-bar" v-if="links.length">
+    <input v-model="search" type="text" placeholder="Buscar links..." />
+  </div>
+
+  <p v-if="!links.length" class="empty">Nenhum link salvo ainda.</p>
+
+  <div class="links-list">
+    <article v-for="link in pagedLinks" :key="link.id" class="link-card">
+
+      <!-- Modo edição -->
+      <form v-if="editingId === link.id" class="card-edit-form" @submit.prevent="saveEdit">
+        <div class="field">
+          <label>URL:</label>
+          <input v-model="editUrl" type="url" required @input="editUrlError = ''" />
+          <p v-if="editUrlError" class="error">{{ editUrlError }}</p>
+        </div>
+        <div class="field">
+          <label>Título:</label>
+          <input v-model="editTitle" type="text" />
+        </div>
+        <div class="field">
+          <label>Descrição:</label>
+          <textarea v-model="editDescription" rows="2"></textarea>
+        </div>
+        <div class="field">
+          <label>Tags:</label>
+          <input v-model="editTags" type="text" placeholder="vue, javascript, tutorial" />
+          <div v-if="editTagSuggestions.length" class="tag-suggestions">
+            <span
+              v-for="tag in editTagSuggestions"
+              :key="tag"
+              class="tag tag-suggestion"
+              @mousedown.prevent
+              @click="applyTagSuggestion('edit', tag)"
+            >{{ tag }}</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>URL da Imagem:</label>
+          <input v-model="editImage" type="url" />
+          <img v-if="editImage" :src="editImage" alt="Preview" class="image-preview" />
+        </div>
+        <div class="card-edit-actions">
+          <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
+          <button type="button" class="btn btn-secondary btn-sm" @click="cancelEdit">Cancelar</button>
+        </div>
+      </form>
+
+      <!-- Modo visualização -->
+      <template v-else>
+        <!-- Linha 1: título (largura total) -->
+        <div class="card-title-row">
+          <h3><a :href="link.url" target="_blank" rel="noopener">{{ link.title }}</a></h3>
+        </div>
+
+        <!-- Linha 2: corpo com float + tags + ações -->
+        <div class="card-content-row">
+          <!-- Imagem floated + url + descrição fluindo ao redor -->
+          <div class="card-body">
+            <img
+              v-if="localImages[link.id] || link.image"
+              :src="localImages[link.id] || link.image"
+              alt=""
+              class="card-image"
+            />
+            <p class="card-url">{{ link.url }}</p>
+            <p v-if="link.description" class="card-desc">{{ link.description }}</p>
+          </div>
+
+          <!-- Tags + ações -->
+          <div class="card-side">
+            <div class="card-tags">
+              <span
+                v-for="tag in link.tags"
+                :key="tag"
+                class="tag tag--clickable"
+                :class="{ 'tag--selected': selectedTag?.cardId === link.id && selectedTag?.tag === tag }"
+                @click.stop="toggleTagSelection(link.id, tag)"
+              >{{ tag }}<button
+                  v-if="selectedTag?.cardId === link.id && selectedTag?.tag === tag"
+                  class="tag-remove-btn"
+                  @click.stop="removeTagFromCard(link.id, tag)"
+                  title="Remover tag"
+                >×</button></span>
+
+              <div v-if="availableTagsForCard(link.id).length" class="tag-add-wrap">
+                <button class="tag-add-btn" @click.stop="toggleTagMenu(link.id)" title="Adicionar tag">+</button>
+                <div v-if="openTagMenu === link.id" class="tag-add-menu" @click.stop>
+                  <span
+                    v-for="t in availableTagsForCard(link.id)"
+                    :key="t"
+                    class="tag tag-menu-item"
+                    @click.stop="addTagToCard(link.id, t)"
+                  >{{ t }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <button class="btn btn-icon btn-secondary" @click="startEdit(link)" title="Editar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.83 2.83 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+              </button>
+              <button class="btn btn-icon btn-danger" @click="confirmRemove(link.id)" title="Remover">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </template>
+
+    </article>
+  </div>
+
+  <div class="pagination-bar" v-if="links.length">
+    <div class="pagination" v-if="totalPages > 1">
+      <button class="btn btn-secondary btn-sm" :disabled="currentPage === 1" @click="prevPage">‹ Anterior</button>
+      <span class="pagination-info">{{ currentPage }} / {{ totalPages }}</span>
+      <button class="btn btn-secondary btn-sm" :disabled="currentPage === totalPages" @click="nextPage">Próxima ›</button>
+    </div>
+    <div class="page-size-control">
+      <label for="pageSize">Por página:</label>
+      <select v-model.number="pageSize" id="pageSize" class="page-size-select">
+        <option :value="10">10</option>
+        <option :value="20">20</option>
+        <option :value="30">30</option>
+        <option :value="50">50</option>
+        <option :value="100">100</option>
+      </select>
+    </div>
+  </div>
+
+  <p v-if="storageSize" class="storage-info">Armazenamento utilizado: {{ storageSize }}</p>
+</section>

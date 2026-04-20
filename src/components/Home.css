@@ -1,0 +1,444 @@
+.form-section,
+.links-section {
+  margin-bottom: 2rem;
+}
+
+h2 {
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.field {
+  margin-bottom: 0.75rem;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-background-soft);
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--color-border-hover);
+}
+
+.url-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.url-row input {
+  flex: 1;
+}
+
+.error {
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.image-preview {
+  margin-top: 0.5rem;
+  max-width: 200px;
+  max-height: 120px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: opacity 0.2s;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: #fff;
+}
+
+.btn-secondary {
+  background: var(--color-background-mute);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.btn-danger {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.6rem;
+  font-size: 0.8rem;
+}
+
+.links-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.links-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.search-bar {
+  margin: 1rem 0;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-background-soft);
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+
+.empty {
+  color: var(--color-text);
+  opacity: 0.5;
+  margin-top: 1rem;
+}
+
+/* ─── Lista de cards ────────────────────────────────────── */
+
+.links-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 860px) {
+  .links-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Card ──────────────────────────────────────────────── */
+
+/* ─── Card ──────────────────────────────────────────────── */
+
+.link-card {
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-background-soft);
+}
+
+/* Linha 1: título em largura total */
+.card-title-row {
+  margin-bottom: 0.4rem;
+}
+
+.card-title-row h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-title-row h3 a {
+  color: var(--color-heading);
+  text-decoration: none;
+}
+
+.card-title-row h3 a:hover {
+  text-decoration: underline;
+}
+
+/* Linha 2: corpo (float) + side (tags + ações) */
+.card-content-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Corpo com imagem floated — overflow: hidden faz clearfix */
+.card-body {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Float: url e descrição fluem ao redor */
+.card-image {
+  float: left;
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-right: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+/* overflow: hidden faz o parágrafo virar BFC,
+   impedindo sobreposição com o float e ativando text-overflow */
+.card-url {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 0.78rem;
+  color: var(--color-text);
+  opacity: 0.55;
+  margin-bottom: 0.2rem;
+}
+
+/* Descrição sem BFC: texto flui naturalmente ao redor do float */
+.card-desc {
+  font-size: 0.85rem;
+  color: var(--color-text);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Side: tags em cima, ações no canto inferior direito */
+.card-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-shrink: 0;
+  min-width: 80px;
+}
+
+.card-tags {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.25rem;
+  max-width: 8em;
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.3rem;
+  align-self: flex-end;
+  margin-top: 0.5rem;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  background: var(--color-background-mute);
+  border: 1px solid var(--color-border);
+  padding: 0.1rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.tag--clickable {
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.tag--clickable:hover {
+  border-color: var(--color-border-hover);
+}
+
+.tag--selected {
+  border-color: #e74c3c;
+  background: rgba(231, 76, 60, 0.12);
+}
+
+.tag-remove-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #e74c3c;
+  font-size: 0.85rem;
+  font-weight: bold;
+  padding: 0;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tag-add-wrap {
+  position: relative;
+}
+
+.tag-add-btn {
+  background: var(--color-background-mute);
+  border: 1px dashed var(--color-border);
+  border-radius: 50%;
+  width: 1.4rem;
+  height: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--color-text);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.tag-add-btn:hover {
+  background: var(--color-border);
+  border-color: var(--color-border-hover);
+}
+
+.tag-add-menu {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  background: var(--color-background-soft);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  z-index: 20;
+  min-width: 130px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.tag-menu-item {
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.tag-menu-item:hover {
+  background: var(--color-border);
+  border-color: var(--color-border-hover);
+}
+
+/* ─── Formulário de edição inline ───────────────────────── */
+
+.card-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.card-edit-form .field {
+  margin-bottom: 0.5rem;
+}
+
+.card-edit-form .field label {
+  font-size: 0.8rem;
+}
+
+.card-edit-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+
+/* ─── Sugestões de tags ─────────────────────────────────── */
+
+.tag-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.4rem;
+}
+
+.tag-suggestion {
+  cursor: pointer;
+  background: var(--color-background-mute);
+  border: 1px dashed var(--color-border);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.tag-suggestion:hover {
+  background: var(--color-border);
+  border-color: var(--color-border-hover);
+}
+
+/* ─── Paginação ─────────────────────────────────────────── */
+
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.25rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.pagination-info {
+  font-size: 0.85rem;
+  color: var(--color-text);
+  opacity: 0.55;
+  min-width: 3.5rem;
+  text-align: center;
+}
+
+.page-size-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.page-size-select {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-background-soft);
+  color: var(--color-text);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* ─── Rodapé ────────────────────────────────────────────── */
+
+.storage-info {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: var(--color-text);
+  opacity: 0.5;
+  text-align: right;
+}
